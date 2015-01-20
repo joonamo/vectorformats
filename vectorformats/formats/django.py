@@ -62,6 +62,19 @@ class Django(Format):
                     geometry['coordinates'] = geom.coords
                 feature.geometry = geometry
 
+            elif self.geodjango_collection:
+                geometry_collection = {}
+                geometry_collection['type'] = 'GeometryCollection'
+                geometries = []
+                for geom_name in self.geodjango_collection:
+                    geom = getattr(res, geom_name)
+                    geometry = {}
+                    geometry['type'] = geom.geom_type
+                    geometry['coordinates'] = geom.coords
+                    geometries.append(geometry)
+                geometry_collection['geometries'] = geometries
+                feature.geometry = geometry_collection
+
             if self.pickled_properties:
                 props = getattr(res, self.pickled_properties) 
                 feature.properties = pickle.loads(props.encode("utf-8"))
